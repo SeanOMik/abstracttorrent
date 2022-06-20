@@ -1,6 +1,3 @@
-use qbittorrent::{TorrentInfo as QTorrentInfo, TorrentUpload as QTorrentUpload, 
-    TrackerStatus as QTrackerStatus, TorrentTracker as QTorrentTracker};
-
 #[derive(Debug, Default)]
 pub struct TorrentInfo {
     pub name: String,
@@ -10,19 +7,7 @@ pub struct TorrentInfo {
     pub hash: String,
 }
 
-impl From<QTorrentInfo> for TorrentInfo {
-    fn from(torrent: QTorrentInfo) -> Self {
-        TorrentInfo {
-            name: torrent.name,
-            trackers: vec![torrent.tracker], // NOTE: qBittorrent only gives us one tracker.
-            category: torrent.category,
-            tags: torrent.tags,
-            hash: torrent.hash,
-        }
-    }
-}
-
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct TorrentUpload {
     /// URL(s) of the torrent files.
     pub urls: Vec<String>,
@@ -38,15 +23,9 @@ pub struct TorrentUpload {
     pub paused: Option<bool>,
 }
 
-impl From<QTorrentUpload> for TorrentUpload {
-    fn from(upload: QTorrentUpload) -> Self {
-        TorrentUpload {
-            urls: upload.urls,
-            torrents: upload.torrents,
-            tags: upload.tags,
-            category: upload.category,
-            paused: upload.paused,
-        }
+impl TorrentUpload {
+    pub fn builder() -> TorrentUploadBuilder {
+        TorrentUploadBuilder::default()
     }
 }
 
@@ -106,6 +85,10 @@ impl TorrentUploadBuilder {
         self.params.paused = Some(paused);
         self
     }
+
+    pub fn build(&self) -> TorrentUpload {
+        self.params.clone()
+    }
 }
 
 #[derive(Debug)]
@@ -138,26 +121,4 @@ pub enum TrackerStatus {
     
     /// Tracker has been contacted, but it is not working (or doesn't send proper replies)
     NotWorking = 4
-}
-
-impl From<QTorrentTracker> for TorrentTracker {
-    fn from(tracker: QTorrentTracker) -> Self {
-        TorrentTracker {
-            url: tracker.url,
-            status: tracker.status.into(),
-            message: Some(tracker.message),
-        }
-    }
-}
-
-impl From<QTrackerStatus> for TrackerStatus {
-    fn from(status: QTrackerStatus) -> Self {
-        match status {
-            QTrackerStatus::Disabled => TrackerStatus::Disabled,
-            QTrackerStatus::NotContacted => TrackerStatus::NotContacted,
-            QTrackerStatus::Working => TrackerStatus::Working,
-            QTrackerStatus::Updating => TrackerStatus::Updating,
-            QTrackerStatus::NotWorking => TrackerStatus::NotWorking,
-        }
-    }
 }
