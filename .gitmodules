@@ -1,0 +1,3 @@
+[submodule "qbittorrent-rs"]
+	path = qbittorrent-rs
+	url = git@github.com:SeanOMik/qbittorrent-rs.git
