@@ -92,8 +92,8 @@ impl From<qbittorrent::TrackerStatus> for crate::torrent::TrackerStatus {
 }
 
 #[async_trait]
-impl<'a> TorrentClient<'a> for QBittorrentClient<'a> {
-    async fn login(&mut self, url: &'a str, username: &'a str, password: &'a str) -> ClientResult<()> {
+impl TorrentClient for QBittorrentClient {
+    async fn login(&mut self, url: &str, username: &str, password: &str) -> ClientResult<()> {
         Ok(Self::login(&mut self, url, username, password).await?)
     }
 

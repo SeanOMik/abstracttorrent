@@ -7,8 +7,8 @@ use crate::{torrent::{TorrentInfo, TorrentTracker, TorrentUpload}, error::Client
 pub type ClientResult<T> = Result<T, ClientError>;
 
 #[async_trait]
-pub trait TorrentClient<'a> {
-    async fn login(&mut self, url: &'a str, username: &'a str, password: &'a str) -> ClientResult<()>;
+pub trait TorrentClient {
+    async fn login(&mut self, url: &str, username: &str, password: &str) -> ClientResult<()>;
 
     async fn get_torrent_list(&self) -> ClientResult<Vec<TorrentInfo>>;
 
