@@ -5,13 +5,13 @@ use qbittorrent::error::ClientError as QClientError;
 #[derive(Debug)]
 pub enum ClientError {
     /// Http error
-    Http(Box<dyn Error>),
+    Http(Box<dyn Error + Send + Sync>),
 
     /// Authorization error
     Authorization,
 
     /// Parsing error (json for qBittorrent)
-    Parsing(Box<dyn Error>),
+    Parsing(Box<dyn Error + Send + Sync>),
 }
 
 impl From<QClientError> for ClientError {

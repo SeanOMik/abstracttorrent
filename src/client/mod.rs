@@ -1,4 +1,7 @@
-pub mod qbittorrent;
+mod qbittorrent_client;
+pub use qbittorrent_client::*;
+
+use crate::common;
 
 use async_trait::async_trait;
 
@@ -10,10 +13,11 @@ pub type ClientResult<T> = Result<T, ClientError>;
 pub trait TorrentClient {
     async fn login(&mut self, url: &str, username: &str, password: &str) -> ClientResult<()>;
 
-    async fn get_torrent_list(&self) -> ClientResult<Vec<TorrentInfo>>;
+    async fn get_torrent_list(&self, params: Option<common::GetTorrentListParams>) -> ClientResult<Vec<TorrentInfo>>;
 
     async fn get_torrent_trackers(&self, torrent: &TorrentInfo) -> ClientResult<Vec<TorrentTracker>>;
     async fn add_torrent_tracker(&self, torrent: &TorrentInfo, tracker_url: String) -> ClientResult<()>;
+    async fn add_torrent_trackers(&self, torrent: &TorrentInfo, trackers: Vec<String>) -> ClientResult<()>;
     async fn replace_torrent_tracker(&self, torrent: &TorrentInfo, old_url: String, new_url: String) -> ClientResult<()>;
     async fn remove_torrent_tracker(&self, torrent: &TorrentInfo, tracker_url: String) -> ClientResult<()>;
 

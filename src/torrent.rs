@@ -1,10 +1,56 @@
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct TorrentInfo {
     pub name: String,
     pub trackers: Vec<String>,
     pub category: String,
     pub tags: Vec<String>,
     pub hash: String,
+    pub state: TorrentState,
+}
+
+impl TorrentInfo {
+    pub fn from_hash(hash: String) -> TorrentInfo {
+        let mut def = TorrentInfo::default();
+        def.hash = hash;
+
+        def
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum TorrentState {
+    /// Some error occurred
+    Error,
+
+    /// Torrent data files is missing
+    MissingFiles,
+
+    /// Torrent is being seeded and data is being transferred
+    Uploading,
+
+    /// Torrent is paused  but in a seeding state.
+    PausedUploading,
+
+    /// Torrent is queued but in a seeding state.
+    QueuedUploading,
+
+    /// Torrent is being downloaded and data is being transferred
+    Downloading,
+
+    /// Torrent is paused but in a downloading state.
+    PausedDownloading,
+
+    /// Torrent is queued but in a downloading state.
+    QueuedDownloading,
+
+    /// The state is unknown
+    Unknown,
+}
+
+impl Default for TorrentState {
+    fn default() -> Self {
+        Self::Unknown
+    }
 }
 
 #[derive(Debug, Default, Clone)]
@@ -81,8 +127,9 @@ impl TorrentUploadBuilder {
         self
     }
 
-    pub fn paused(&mut self, paused: bool) -> &mut Self {
-        self.params.paused = Some(paused);
+    /// Set the upload to be paused by default.
+    pub fn paused(&mut self) -> &mut Self {
+        self.params.paused = Some(true);
         self
     }
 
